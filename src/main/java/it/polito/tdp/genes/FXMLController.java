@@ -5,9 +5,13 @@
 package it.polito.tdp.genes;
 
 import java.net.URL;
+import java.util.*;
 import java.util.ResourceBundle;
 
+import org.jgrapht.Graphs;
+
 import it.polito.tdp.genes.model.Genes;
+import it.polito.tdp.genes.model.GenesWeight;
 import it.polito.tdp.genes.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -30,7 +34,7 @@ public class FXMLController {
     private Button btnCreaGrafo; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbGeni"
-    private ComboBox<?> cmbGeni; // Value injected by FXMLLoader
+    private ComboBox<Genes> cmbGeni; // Value injected by FXMLLoader
 
     @FXML // fx:id="btnGeniAdiacenti"
     private Button btnGeniAdiacenti; // Value injected by FXMLLoader
@@ -46,13 +50,31 @@ public class FXMLController {
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
+    	txtResult.clear();
     	
+    	model.creaGrafo();
+    	
+    	cmbGeni.getItems().addAll(model.getGenes().values());
 
     }
 
     @FXML
     void doGeniAdiacenti(ActionEvent event) {
-
+    	txtResult.appendText("\n");
+    	
+    	Genes g = cmbGeni.getSelectionModel().getSelectedItem();
+    	List<GenesWeight> gw = new ArrayList<GenesWeight>();
+    	
+    	for(Genes gg: Graphs.neighborListOf(model.getGrafo(), g)) {
+    		gw.add(new GenesWeight(gg, model.getGrafo().getEdgeWeight(model.getGrafo().getEdge(g, gg))));
+    	}
+    	
+    	Collections.sort(gw);
+    	
+    	txtResult.appendText("Geni adiacenti a "+g.toString()+": \n");
+    	for(GenesWeight gewe: gw) {
+    		txtResult.appendText(gewe.toString()+"\n");
+    	}
     	
     }
 
